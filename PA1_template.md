@@ -54,6 +54,7 @@ ggplot(dailyData, aes(x = date, y = dailySteps)) + geom_bar(stat = "identity")
 ```
 
 ![plot of chunk dailyStepshist](figure/dailyStepshist.png) 
+
 Our data is now aggregated by day and we can use the `mean` and `median` functions from `base`:
 
 
