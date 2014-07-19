@@ -113,3 +113,20 @@ median(dailyStepsReplace$dailySteps)
 Replacing the missing values by the mean value for that interval results in the same mean value as previously the median however has increased.  
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+We check our data and see if it is on a weekday or not using the `weekdays` function and checking if the result is a `Saturday` or `Sunday`:
+
+```{r activityDCWeekday}
+activityDataCopy[,weekday := ifelse(weekdays(date) %in% c("Saturday", "Sunday"), "Weekend", "Weekday")]
+activityDataCopy[, is.weekday := as.factor(weekday)]
+activityDCPattern <- activityDataCopy[, list(pattern = mean(steps))
+, by = list(interval, is.weekday)
+]
+```
+
+
+Finally we make two separate activity pattern plots for weekday and weekend using `ggplot2`:
+
+```{r activityWeekday}
+ggplot(activityDCPattern, aes(x = interval, y = pattern)) + geom_line() + facet_wrap(~ is.weekday, nrow = 2)
+```
