@@ -42,6 +42,13 @@ dailyData <- activityData[complete.cases(activityData)
                           , list(dailySteps = sum(steps)), by = date]
 ```
 
+To make a histogram we use the `ggplot2` package with the geom `geom_bar`:
+
+```{r dailyStepshist}
+library(ggplot2)
+ggplot(dailyData, aes(x = date, y = dailyData)) + geom_bar(stat = "identity")
+
+```
 Our data is now aggregated by day and we can use the `mean` and `median` functions from `base`:
 
 ```{r meanDailySteps}
@@ -61,7 +68,6 @@ dailyAverage <- activityData[complete.cases(activityData)
 This can be plotted as a timeseries using the `ggplot2` package and `geom_line` `geom`.
 
 ```{r dailyPatternPlot}
-library(ggplot2)
 ggplot(dailyAverage, aes(x = interval, y = pattern)) + geom_line()
 
 ```

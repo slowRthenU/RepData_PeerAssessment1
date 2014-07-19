@@ -45,6 +45,22 @@ dailyData <- activityData[complete.cases(activityData)
                           , list(dailySteps = sum(steps)), by = date]
 ```
 
+To make a histogram we use the `ggplot2` package with the geom `geom_bar`:
+
+
+```r
+library(ggplot2)
+ggplot(dailyData, aes(x = date, y = dailyData)) + geom_bar(stat = "identity")
+```
+
+```
+## Don't know how to automatically pick scale for object of type data.table/data.frame. Defaulting to continuous
+```
+
+```
+## Error: Aesthetics must either be length one, or the same length as the
+## dataProblems:dailyData
+```
 Our data is now aggregated by day and we can use the `mean` and `median` functions from `base`:
 
 
@@ -78,7 +94,6 @@ This can be plotted as a timeseries using the `ggplot2` package and `geom_line` 
 
 
 ```r
-library(ggplot2)
 ggplot(dailyAverage, aes(x = interval, y = pattern)) + geom_line()
 ```
 
