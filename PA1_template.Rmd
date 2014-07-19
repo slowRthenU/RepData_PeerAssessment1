@@ -20,28 +20,96 @@ if("activity.csv" %in% appFiles){
 }
 ```
 
+Now the data is present in `.csv` form in the `data` directory. The data can be loaded into `R` using the `read.csv` function. We define a bespoke date class to handle the formatting upon read. The data is then passed into the `data.table` package.
 
-```{r read_data}
-activity_data <- read.csv("data/activity.csv")
-activity_data$date <- as.Date(activity_data$date, "%Y-%m-%d")
+```{r readData}
+setClass('myDate')
+setAs("character", "myDate", function(from) as.Date(from, format="%Y-%m-%d") )
 
+activityData <- read.csv("data/activity.csv", colClasses = c("numeric", "myDate", "integer"))
 library(data.table)
-activity_data <- data.table(activity_data)
-# head(activity_data)
+activityData <- data.table(activityData)
 ```
 
 
 
 ## What is mean total number of steps taken per day?
 
+The variable `activityData` contains the fitness data. The function `complete.cases` from the `stats` package can be used to remove rows with `NA` values. Our requirement is to sum the number of steps by day or date:
 
+```{r dailySteps}
+dailyData <- activityData[complete.cases(activityData)
+                          , list(dailySteps = sum(steps)), by = date]
+```
+
+Our data is now aggregated by day and we can use the `mean` and `median` functions from `base`:
+
+```{r meanDailySteps}
+mean(dailyData$dailySteps)
+median(dailyData$dailySteps)
+```
 
 ## What is the average daily activity pattern?
 
+To compute the average daily activity we again remove the `NA`'s from our data using `complet.cases` and this time use the `mean` function on our step data grouping by interval:
 
+```{r dailyPattern}
+dailyAverage <- activityData[complete.cases(activityData)
+                          , list(pattern = mean(steps)), by = interval]
+```
+
+This can be plotted as a timeseries using the `ggplot2` package and `geom_line` `geom`.
+
+```{r dailyPatternPlot}
+library(ggplot2)
+ggplot(dailyAverage, aes(x = interval, y = pattern)) + geom_line()
+
+```
+
+To find the interval that contains on average the maximum number of steps we can use the 
+`which.max` function to identify the index of the maximum from our patterns then use this index on our intervals:
+
+```{r dailyPatternMax}
+dailyAverage$interval[which.max(dailyAverage$pattern)]
+
+```
 
 ## Imputing missing values
 
+To sum the number of rows with `NA` in our data we again use `complete.case` function. We negate the returned vector which indicate which rows have NA's then we sum.
 
+```{r countNA}
+sum(!complete.cases(activityData))
+
+```
+
+
+Next we investigate the instances of `NA` among the columns of our data:
+
+```{r instanceNA}
+sapply(lapply(activityData, is.na), sum)
+
+```
+
+So `NA`'s only occur in the step data. The way we will handle the `NA`'s is to replace the `NA` value with the mean number of steps for that interval across our data.
+
+```{r replaceNA}
+activityDataCopy <- copy(activityData)
+activityDataCopy <- activityDataCopy[, steps := ifelse(is.na(steps), mean(steps, na.rm = TRUE), steps)
+                                     , by = interval]
+```
+
+Carry out the same daily analysis as previously on our imputed dataset. We use the `ggplot2` package with `geom_bar` to create the histogram:
+
+```{r replaceNADaily}
+dailyStepsReplace <- activityDataCopy[, list(dailySteps = sum(steps)), by = date]
+ggplot(dailyStepsReplace, aes(x = date, y = dailySteps)) + geom_bar(stat = "identity")
+mean(dailyStepsReplace$dailySteps)
+median(dailyStepsReplace$dailySteps)
+
+
+```
+
+Replacing the missing values by the mean value for that interval results in the same mean value as previously the median however has increased.  
 
 ## Are there differences in activity patterns between weekdays and weekends?
