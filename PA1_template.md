@@ -50,17 +50,10 @@ To make a histogram we use the `ggplot2` package with the geom `geom_bar`:
 
 ```r
 library(ggplot2)
-ggplot(dailyData, aes(x = date, y = dailyData)) + geom_bar(stat = "identity")
+ggplot(dailyData, aes(x = date, y = dailySteps)) + geom_bar(stat = "identity")
 ```
 
-```
-## Don't know how to automatically pick scale for object of type data.table/data.frame. Defaulting to continuous
-```
-
-```
-## Error: Aesthetics must either be length one, or the same length as the
-## dataProblems:dailyData
-```
+![plot of chunk dailyStepshist](figure/dailyStepshist.png) 
 Our data is now aggregated by day and we can use the `mean` and `median` functions from `base`:
 
 

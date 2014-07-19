@@ -46,7 +46,7 @@ To make a histogram we use the `ggplot2` package with the geom `geom_bar`:
 
 ```{r dailyStepshist}
 library(ggplot2)
-ggplot(dailyData, aes(x = date, y = dailyData)) + geom_bar(stat = "identity")
+ggplot(dailyData, aes(x = date, y = dailySteps)) + geom_bar(stat = "identity")
 
 ```
 Our data is now aggregated by day and we can use the `mean` and `median` functions from `base`:
